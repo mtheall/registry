@@ -9,6 +9,10 @@
 #include <sqlite3.h>
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum {
   KEY_VOID,   /* NULL data */
   KEY_NUMBER, /* 64-bit int, signed or unsigned (user keeps track of signedness) */
@@ -62,6 +66,10 @@ FEOS_EXPORT int      regSetRaw    (const char *path, const void *value, size_t l
    all failures will set errno
 */
 FEOS_EXPORT KeyPair* regGetKeyPair(const char *path);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* REGISTRY_H */
 
