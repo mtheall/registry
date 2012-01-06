@@ -603,7 +603,7 @@ int regSetRaw(const char *path, const void *value, size_t length) {
   return 0;
 }
 
-const KeyPair* regGetKeyPair(const char *name) {
+KeyPair* regGetKeyPair(const char *name) {
   sqlite3_int64 id;
   KeyPair *key;
   sqlite3_stmt *stmt;

@@ -62,7 +62,7 @@ FEOS_EXPORT int regSetRaw   (const char *path, const void *value, size_t length)
    returns KeyPair* for success, NULL for failure
    all failures will set errno
 */
-FEOS_EXPORT const KeyPair* regGetKeyPair(const char *path);
+FEOS_EXPORT KeyPair* regGetKeyPair(const char *path);
 
 /* path: same as above
    returns 0 for success, -1 for failure
