@@ -589,7 +589,7 @@ int regSetRaw(const char *path, const void *value, size_t length) {
   return 0;
 }
 
-KeyPair* regGetKeyPair(const char *name) {
+const KeyPair* regGetKeyPair(const char *name) {
   sqlite3_int64 id;
   KeyPair *key;
   sqlite3_stmt *stmt;
@@ -633,7 +633,8 @@ KeyPair* regGetKeyPair(const char *name) {
 
       rc = sqlite3_step(stmt);
       assert(rc == SQLITE_ROW);
-      key->value.number = sqlite3_column_int64(stmt, 0);
+      key->number = sqlite3_column_int64(stmt, 0);
+      key->length = sizeof(key->number);
 
       break;
 
@@ -649,12 +650,13 @@ KeyPair* regGetKeyPair(const char *name) {
 
       rc = sqlite3_step(stmt);
       assert(rc == SQLITE_ROW);
-      key->value.string = strdup((char*)sqlite3_column_text(stmt, 0));
+      key->string = strdup((char*)sqlite3_column_text(stmt, 0));
 
-      if(key->value.string == NULL) {
+      if(key->string == NULL) {
         errno = ENOMEM;
         goto err;
       }
+      key->length = strlen(key->string)+1;
 
       break;
 
@@ -670,14 +672,14 @@ KeyPair* regGetKeyPair(const char *name) {
 
       rc = sqlite3_step(stmt);
       assert(rc == SQLITE_ROW);
-      key->value.raw.length = sqlite3_column_bytes(stmt, 0);
+      key->length = sqlite3_column_bytes(stmt, 0);
 
-      key->value.raw.data = malloc(key->value.raw.length);
-      if(key->value.raw.data == NULL) {
+      key->raw = malloc(key->length);
+      if(key->raw == NULL) {
         errno = ENOMEM;
         goto err;
       }
-      memcpy(key->value.raw.data, sqlite3_column_blob(stmt, 0), key->value.raw.length);
+      memcpy(key->raw, sqlite3_column_blob(stmt, 0), key->length);
 
       break;
 
@@ -692,5 +694,30 @@ err:
   free(key->name);
   free(key);
   return NULL;
+}
+
+int regFreeKeyPair(KeyPair *kp) {
+  if(kp) {
+    switch(kp->type) {
+      case KEY_VOID:
+      case KEY_NUMBER:
+        break;
+      case KEY_STRING:
+        free(kp->string);
+        break;
+      case KEY_RAW:
+        free(kp->raw);
+        break;
+      default:
+        errno = EINVAL;
+        return -1;
+    }
+    free(kp->name);
+    free(kp);
+    return 0;
+  }
+
+  errno = EINVAL;
+  return -1;
 }
 

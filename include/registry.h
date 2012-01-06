@@ -6,7 +6,6 @@
 #else
 #define FEOS_EXPORT
 #endif
-#include <sqlite3.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -21,16 +20,14 @@ typedef enum {
 } KeyType;
 
 typedef struct {
-  char *name;   /* key name (free() during cleanup) */
+  char *name;   /* key name */
   KeyType type; /* key type */
+  size_t length; /* length of data */
   union {
-    uint64_t number; /* if type == KEY_NUMBER */
-    char *string;    /* if type == KEY_STRING (free() during cleanup) */
-    struct {
-      size_t length; /* length of data */
-      void *data;    /* the data (free() during cleanup) */
-    } raw;
-  } value;
+    uint64_t number;  /* if type == KEY_NUMBER */
+    char     *string; /* if type == KEY_STRING */
+    void     *raw;    /* if type == KEY_RAW    */
+  };
 } KeyPair;
 
 /* open, close, initialize (erase) registry. returns 0 for success, -1 for failure
@@ -54,18 +51,24 @@ FEOS_EXPORT int regInit (void);
 
    default type is KEY_VOID
 */
-FEOS_EXPORT int      regAddKey    (const char *path);
-FEOS_EXPORT int      regDelKey    (const char *path);
-FEOS_EXPORT int      regSetVoid   (const char *path);
-FEOS_EXPORT int      regSetNumber (const char *path, uint64_t    value);
-FEOS_EXPORT int      regSetString (const char *path, const char *value);
-FEOS_EXPORT int      regSetRaw    (const char *path, const void *value, size_t length);
+FEOS_EXPORT int regAddKey   (const char *path);
+FEOS_EXPORT int regDelKey   (const char *path);
+FEOS_EXPORT int regSetVoid  (const char *path);
+FEOS_EXPORT int regSetNumber(const char *path, uint64_t    value);
+FEOS_EXPORT int regSetString(const char *path, const char *value);
+FEOS_EXPORT int regSetRaw   (const char *path, const void *value, size_t length);
 
 /* path: same as above
-   returns KeyPair* on success, NULL on failure
+   returns KeyPair* for success, NULL for failure
    all failures will set errno
 */
-FEOS_EXPORT KeyPair* regGetKeyPair(const char *path);
+FEOS_EXPORT const KeyPair* regGetKeyPair(const char *path);
+
+/* path: same as above
+   returns 0 for success, -1 for failure
+   all failures will set errno
+*/
+FEOS_EXPORT int regFreeKeyPair(KeyPair *kp);
 
 #ifdef __cplusplus
 }
