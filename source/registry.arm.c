@@ -489,7 +489,7 @@ int regSetNumber(const char *path, uint64_t value) {
       return -1;
     }
   }
-  else if(regSetVoid(path))
+  else if(type != KEY_VOID && regSetVoid(path))
     /* errno from regSetVoid */
     return -1;
   else {
@@ -552,7 +552,7 @@ int regSetString(const char *path, const char *value) {
       return -1;
     }
   }
-  else if(regSetVoid(path))
+  else if(type != KEY_VOID && regSetVoid(path))
     /* errno from regSetVoid */
     return -1;
   else {
@@ -612,7 +612,7 @@ int regSetRaw(const char *path, const void *value, size_t length) {
     rc = sqlite3_step(stmt);
     assert(rc == SQLITE_DONE);
   }
-  else if(regSetVoid(path))
+  else if(type != KEY_VOID && regSetVoid(path))
     /* errno from regSetVoid */
     return -1;
   else {
