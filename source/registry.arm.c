@@ -242,9 +242,23 @@ int regAddKey(const char *path) {
   if(strcmp(base, "") == 0)
     parent = 0;
   else if((parent = regGetKey(base)) == 0) {
-    free(base);
-    /* errno from regGetKey */
-    return -1;
+    if(errno == ENOENT) {
+      if(regAddKey(base)) {
+        free(base);
+        /* errno from regAddKey */
+        return -1;
+      }
+      if((parent = regGetKey(base)) == 0) {
+        free(base);
+        /* errno from regGetKey */
+        return -1;
+      }
+    }
+    else {
+      free(base);
+      /* errno from regGetKey */
+      return -1;
+    }
   }
 
   rc = sqlite3_reset(stmt);
