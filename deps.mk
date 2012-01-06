@@ -1,0 +1,1 @@
+registry: sqlite3

@@ -29,9 +29,8 @@ SOURCES       := source
 DATA          := data
 INCLUDES      := include
 
-CONF_DEFINES =
-CONF_LIBDIRS = $(FEOSSDK)/userlib/sqlite3
-CONF_LIBS    = -lsqlite3
+CONF_USERLIBS = sqlite3
+CONF_LIBS     = -lsqlite3
 
 include $(FEOSMK)/dynlib.mk
 
