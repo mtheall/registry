@@ -134,6 +134,7 @@ int regClose(void) {
 
   rc = sqlite3_close(db);
   assert(rc == SQLITE_OK);
+  (void)rc;
   db = NULL;
 
   return 0;
@@ -402,6 +403,7 @@ int regSetVoid(const char *path) {
   sprintf(query, "update key set type = %d where rowid = %lld;", KEY_VOID, id);
   rc = sqlite3_exec(db, query, NULL, NULL, NULL);
   assert(rc == SQLITE_OK);
+  (void)rc;
 
   return 0;
 }
@@ -592,6 +594,7 @@ KeyPair* regGetKeyPair(const char *name) {
   KeyPair *key;
   sqlite3_stmt *stmt;
   int rc;
+  (void)rc;
 
   key = malloc(sizeof(KeyPair));
   if(key == NULL) {
