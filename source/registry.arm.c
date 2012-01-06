@@ -397,9 +397,20 @@ int regSetVoid(const char *path) {
   KeyType type;
 
   id = regGetKey(path);
-  if(id == 0)
-    /* errno from regGetKey */
-    return -1;
+  if(id == 0) {
+    if(errno == ENOENT) {
+      if(regAddKey(path))
+        /* errno from regAddKey */
+        return -1;
+      id = regGetKey(path);
+      if(id == 0)
+        /* errno from regGetKey */
+        return -1;
+    }
+    else
+      /* errno from regGetKey */
+      return -1;
+  }
 
   type = regGetKeyType(id);
   switch(type) {
@@ -440,9 +451,20 @@ int regSetNumber(const char *path, uint64_t value) {
   sqlite3_stmt *stmt;
 
   id = regGetKey(path);
-  if(id == 0)
-    /* errno from regGetKey */
-    return -1;
+  if(id == 0) {
+    if(errno == ENOENT) {
+      if(regAddKey(path))
+        /* errno from regAddKey */
+        return -1;
+      id = regGetKey(path);
+      if(id == 0)
+        /* errno from regGetKey */
+        return -1;
+    }
+    else
+      /* errno from regGetKey */
+      return -1;
+  }
 
   type = regGetKeyType(id);
   if(type == -1)
@@ -492,9 +514,20 @@ int regSetString(const char *path, const char *value) {
   sqlite3_stmt *stmt;
 
   id = regGetKey(path);
-  if(id == 0)
-    /* errno from regGetKey */
-    return -1;
+  if(id == 0) {
+    if(errno == ENOENT) {
+      if(regAddKey(path))
+        /* errno from regAddKey */
+        return -1;
+      id = regGetKey(path);
+      if(id == 0)
+        /* errno from regGetKey */
+        return -1;
+    }
+    else
+      /* errno from regGetKey */
+      return -1;
+  }
 
   type = regGetKeyType(id);
   if(type == -1)
@@ -549,9 +582,20 @@ int regSetRaw(const char *path, const void *value, size_t length) {
     return -1;
 
   id = regGetKey(path);
-  if(id == 0)
-    /* errno from regGetKey */
-    return -1;
+  if(id == 0) {
+    if(errno == ENOENT) {
+      if(regAddKey(path))
+        /* errno from regAddKey */
+        return -1;
+      id = regGetKey(path);
+      if(id == 0)
+        /* errno from regGetKey */
+        return -1;
+    }
+    else
+      /* errno from regGetKey */
+      return -1;
+  }
 
   type = regGetKeyType(id);
   if(type == -1)

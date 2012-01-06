@@ -43,14 +43,7 @@ FEOS_EXPORT int regClose(void);
 
    returns 0 for success, -1 for failure
    all failures will set errno
-
-   To add a new key+value:
-     regAddKey("/path/to/key");
-     regSet[type]("/path/to/key", ...);
-
-   default type is KEY_VOID
 */
-FEOS_EXPORT int regAddKey   (const char *path);
 FEOS_EXPORT int regDelKey   (const char *path);
 FEOS_EXPORT int regSetVoid  (const char *path);
 FEOS_EXPORT int regSetNumber(const char *path, uint64_t    value);
