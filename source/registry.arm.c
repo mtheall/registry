@@ -80,6 +80,7 @@ static char errs[] = {
 
 static inline KeyId   regGetKey(const char *path);
 static inline KeyType regGetKeyType(KeyId id);
+static inline int     regInit(void);
 
 static inline int errmap(int sqlite_err) {
   if(sqlite_err >= SQLITE_OK && sqlite_err <= SQLITE_NOTADB)
@@ -103,8 +104,13 @@ static inline sqlite3_stmt* LOAD(int x) {
 
 int regOpen(void) {
   int rc;
+  int flags = SQLITE_OPEN_READWRITE;
   if(db == NULL) {
-    rc = sqlite3_open("/data/FeOS/registry.bin", &db);
+    rc = sqlite3_open_v2("/data/FeOS/registry.bin", &db, flags, NULL);
+    if(rc == SQLITE_CANTOPEN) {
+      flags |= SQLITE_OPEN_CREATE;
+      rc = sqlite3_open_v2("/data/FeOS/registry.bin", &db, flags, NULL);
+    }
     if(rc != SQLITE_OK) {
       errno = errmap(sqlite3_errcode(db));
       return -1;
@@ -113,6 +119,11 @@ int regOpen(void) {
     assert(rc == SQLITE_OK);
     rc = sqlite3_exec(db, "pragma foreign_keys = on;", NULL, NULL, NULL);
     assert(rc == SQLITE_OK);
+
+    if((flags & SQLITE_OPEN_CREATE) && regInit()) {
+      errno = errmap(sqlite3_errcode(db));
+      return -1;
+    }
   }
   else {
     errno = EBUSY;
@@ -140,7 +151,7 @@ int regClose(void) {
   return 0;
 }
 
-int regInit(void) {
+static inline int regInit(void) {
   int rc;
 
   rc = sqlite3_exec(db, "drop table if exists key; "

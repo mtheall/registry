@@ -30,12 +30,11 @@ typedef struct {
   };
 } KeyPair;
 
-/* open, close, initialize (erase) registry. returns 0 for success, -1 for failure
+/* open/close registry. returns 0 for success, -1 for failure
    all failures will set errno
 */
 FEOS_EXPORT int regOpen (void);
 FEOS_EXPORT int regClose(void);
-FEOS_EXPORT int regInit (void);
 
 /* path: in format /path/to/key
    '/' is not a valid key (it is the special root key that cannot be accessed)
