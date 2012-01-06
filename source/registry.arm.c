@@ -104,7 +104,7 @@ static inline sqlite3_stmt* LOAD(int x) {
 int regOpen(void) {
   int rc;
   if(db == NULL) {
-    rc = sqlite3_open("registry", &db);
+    rc = sqlite3_open("/data/FeOS/registry.bin", &db);
     if(rc != SQLITE_OK) {
       errno = errmap(sqlite3_errcode(db));
       return -1;
